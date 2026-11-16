@@ -4,8 +4,7 @@
 
 A web tool for organizing a friendly pickleball **round robin** (partners change every round). It produces a card for each player showing, for every round, the court and the side: **Mur** (wall side) or **Rideau** (curtain side).
 
-**Tool link:** https://claude.ai/artifact/9ij2y181uVvrZoX9d7uSkZ
-
+**Tool link:** https://github.com/Twaart/Pickleball/blob/2918a3beeff2d3c8ef754905c754ddcd4b3e9579/Round%20Robin%20Pickleball.html
 > **Note:** the tool's interface is in French. Button and label names are given below in French, with the English meaning in parentheses.
 
 ---
