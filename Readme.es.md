@@ -1,6 +1,6 @@
 # Round Robin Pickleball – Guía de uso
 
-🌐 [Français](Readme.md) · [English](Readme.en.md) · **Español** · [Deutsch](Readme.de.md)
+🌐 [Français](README.md) · [English](Readme.en.md) · **Español** · [Deutsch](Readme.de.md)
 
 Herramienta web para organizar un **round robin** amistoso de pickleball (los compañeros cambian en cada ronda). Genera una tarjeta para cada jugador que indica, en cada ronda, la cancha y el lado: **Mur** (lado de la pared) o **Rideau** (lado de la cortina).
 
