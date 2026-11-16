@@ -1,5 +1,7 @@
 # Round Robin Pickleball – Guide d'utilisation
 
+🌐 **Français** · [English](Readme.en.md) · [Español](Readme.es.md) · [Deutsch](Readme.de.md)
+
 Outil web pour organiser un tournoi amical de pickleball en **round robin** (partenaires qui changent à chaque manche). Il produit les cartes de chaque joueur : à chaque manche, le terrain et le côté (**Mur** ou **Rideau**).
 
 **Lien de l'outil :** https://claude.ai/artifact/9ij2y181uVvrZoX9d7uSkZ
