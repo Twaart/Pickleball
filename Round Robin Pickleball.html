@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Round Robin Pickleball</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f8fa;--card:#fff;--tx:#1b2430;--mut:#6b7684;--navy:#1f3b5c;--teal:#1c8c8c;--row:#e8f2f2;--bd:#d5dbe2;--mur:#1f3b5c;--rid:#c26a1b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161d;--card:#18212b;--tx:#e8edf2;--mut:#93a0ae;--navy:#2c527f;--teal:#4cc3c3;--row:#1f2c38;--bd:#2c3846;--mur:#7fb0e6;--rid:#f0a35e}}
+html{color-scheme:light dark;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:14px}
+h1{font-size:19px;margin:4px 0 2px}p.sub{margin:0 0 12px;color:var(--mut);font-size:13px}
+.tabs,.sec{display:flex;gap:8px;margin:6px 0 10px;flex-wrap:wrap}
+button,select,input{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:7px 10px}
+button{border-radius:999px;cursor:pointer;padding:8px 14px}
+button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+details{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px 12px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+.names{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
+.names label{font-size:11px;color:var(--mut);display:block}.names input{width:100%}
+.lk{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{background:var(--row);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px;display:flex;gap:6px;align-items:center}
+.chip button{padding:0 8px;border-radius:999px;font-size:14px}
+.lk label{font-size:13px;color:var(--mut)}
+.hint{color:var(--mut);font-size:12px;margin:4px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--card);border:1px dashed var(--bd);border-radius:12px;padding:8px}
+.hd{background:var(--navy);color:#fff;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:14px}
+.hd small{font-weight:600;opacity:.85;font-size:11px;align-self:center;white-space:nowrap}
+table{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}
+th{font-size:10px;color:var(--mut);text-align:left;padding:3px 6px;letter-spacing:.04em}
+td{padding:6px;font-weight:700}tr:nth-child(even) td{background:var(--row)}
+td.t{color:var(--teal);text-align:center}td.m{color:var(--mur)}td.r{color:var(--rid)}
+.rd{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.rd h3{margin:0;padding:8px 12px;background:var(--navy);color:#fff;font-size:14px}
+.m3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.mt{padding:8px 12px;border-top:1px solid var(--bd)}.mt b{color:var(--teal)}
+.mt div{margin-top:3px}.lab{display:inline-block;width:58px;color:var(--mut);font-size:12px}
+.stat{color:var(--mut);font-size:12px;margin:2px 0 10px}
+@media print{.tabs,.sec,.stat,p.sub,details{display:none}body{background:#fff}}
+</style></head><body><main>
+<h1>Round Robin Pickleball</h1>
+<p class="sub" id="sub"></p>
+<details id="cfg"><summary>Joueurs, terrains et jumelages</summary>
+<div class="lk"><label>Joueurs <input id="nn" type="number" min="4" max="40" style="width:76px"></label><label>Terrains <input id="nc" type="number" min="1" max="10" style="width:76px"></label></div>
+<div class="hint" id="cap"></div>
+<div class="names" id="names"></div>
+<div class="hint">Jumeler deux joueurs : ils sont partenaires à toutes les manches (pratique pour un tournoi). Le reste de l’horaire est recalculé.</div>
+<div class="lk"><select id="sa"></select><span>⇄</span><select id="sb"></select><button id="add">Jumeler</button><button id="redo">Nouveau tirage</button></div>
+<div class="hint" id="msg"></div><div class="chips" id="chips"></div></details>
+<div class="tabs" id="tabs"></div>
+<div class="sec"><button id="vc" class="on">Cartes</button><button id="vg">Grille par manche</button><button id="pr">Imprimer</button></div>
+<div class="stat" id="stat"></div>
+<div id="out"></div>
+</main>
+<script>
+const D={"4":[[1,"T1",[3,7],[4,12]],[1,"T2",[6,8],[10,11]],[1,"T3",[1,9],[2,5]],[2,"T1",[10,12],[1,11]],[2,"T2",[5,9],[4,8]],[2,"T3",[2,3],[6,7]],[3,"T1",[4,6],[1,8]],[3,"T2",[2,11],[3,5]],[3,"T3",[7,12],[9,10]],[4,"T1",[8,11],[2,7]],[4,"T2",[1,10],[3,9]],[4,"T3",[4,5],[6,12]]],"6":[[1,"T1",[2,8],[1,6]],[1,"T2",[4,11],[10,12]],[1,"T3",[3,5],[7,9]],[2,"T1",[1,12],[7,10]],[2,"T2",[6,8],[3,11]],[2,"T3",[5,9],[2,4]],[3,"T1",[4,8],[2,3]],[3,"T2",[10,11],[5,7]],[3,"T3",[6,12],[1,9]],[4,"T1",[5,11],[8,12]],[4,"T2",[1,7],[4,9]],[4,"T3",[2,10],[3,6]],[5,"T1",[6,7],[4,5]],[5,"T2",[2,9],[8,10]],[5,"T3",[1,3],[11,12]],[6,"T1",[3,9],[1,5]],[6,"T2",[7,12],[2,6]],[6,"T3",[4,10],[8,11]]],"8":[[1,"T1",[3,10],[5,7]],[1,"T2",[1,9],[6,11]],[1,"T3",[2,12],[4,8]],[2,"T1",[3,8],[6,10]],[2,"T2",[9,12],[2,7]],[2,"T3",[4,5],[1,11]],[3,"T1",[6,8],[1,12]],[3,"T2",[2,4],[5,10]],[3,"T3",[7,11],[3,9]],[4,"T1",[5,9],[4,10]],[4,"T2",[2,11],[3,12]],[4,"T3",[1,6],[7,8]],[5,"T1",[7,12],[1,5]],[5,"T2",[4,6],[3,11]],[5,"T3",[8,10],[2,9]],[6,"T1",[2,3],[1,4]],[6,"T2",[7,10],[8,11]],[6,"T3",[5,12],[6,9]],[7,"T1",[9,11],[2,6]],[7,"T2",[5,8],[3,7]],[7,"T3",[1,10],[4,12]],[8,"T1",[4,11],[8,12]],[8,"T2",[1,3],[9,10]],[8,"T3",[6,7],[2,5]]]};
+let R=4,N=12,C=3,view="c",names=Array(41).fill(""),links=[],cache={},pend={};
+const $=id=>document.getElementById(id);
+try{const s=JSON.parse(localStorage.getItem("pbrr2")||"{}");if(s.names)names=s.names;if(s.links)links=s.links;if(s.N)N=s.N;if(s.C)C=s.C}catch(e){}
+const save=()=>{try{localStorage.setItem("pbrr2",JSON.stringify({names,links,N,C}))}catch(e){}};
+const nm=p=>(names[p]||"").trim()||("Joueur "+p);
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const key=()=>[R,N,C,JSON.stringify(links)].join("|");
+const U=()=>Math.min(C,N>>2);
+function generate(R,N,C,links,done){
+ const U=Math.min(C,N>>2),nb=N-4*U,lk=links.map(l=>[l[0]-1,l[1]-1]);
+ if(lk.length>2*U){done({err:"Trop de jumelages pour le nombre de terrains : maximum "+(2*U)+"."});return}
+ const kk=(a,b)=>Math.min(a,b)*N+Math.max(a,b),lset=new Set(lk.map(x=>kk(x[0],x[1])));
+ const linked=new Set(lk.flat()),free=[];for(let i=0;i<N;i++)if(!linked.has(i))free.push(i);
+ const shuf=a=>a.slice().sort(()=>Math.random()-.5);
+ const T=[],B=[];
+ for(let r=0;r<R;r++){const f=shuf(free),t=lk.map(x=>x.slice());B.push(f.slice(0,nb));const pl=f.slice(nb);for(let i=0;i<pl.length;i+=2)t.push([pl[i],pl[i+1]]);T.push(shuf(t))}
+ const nT=2*U;
+ function cost(){
+  const part=new Array(N*N).fill(0),opp=new Array(N*N).fill(0),mur=new Array(N).fill(0),gp=new Array(N).fill(0),by=new Array(N).fill(0),ct=new Array(N*C).fill(0),sd=new Array(N*R).fill(-1);
+  for(let r=0;r<R;r++){
+   for(let k=0;k<nT;k++){const [a,b]=T[r][k],c=k>>1,s=k&1;
+    part[kk(a,b)]++;ct[a*C+c]++;ct[b*C+c]++;sd[a*R+r]=s;sd[b*R+r]=s;gp[a]++;gp[b]++;
+    if(!s){mur[a]++;mur[b]++;const [x,y]=T[r][k+1];for(const u of [a,b])for(const v of [x,y])opp[kk(u,v)]++}}
+   for(const p of B[r])by[p]++}
+  let z=0;
+  for(let i=0;i<N*N;i++){if(part[i]>1&&!lset.has(i))z+=1000*(part[i]-1);const o=opp[i];if(o){z+=10*o*o;if(o>2)z+=20}}
+  const tb=R*nb/N;
+  for(let p=0;p<N;p++){z+=1000*Math.max(0,Math.abs(2*mur[p]-gp[p])-1);
+   if(nb){const d=by[p]-tb;z+=60*d*d}
+   for(let c=0;c<U;c++){const d=ct[p*C+c]-gp[p]/U;z+=4*d*d}
+   for(let r=0;r<R-2;r++){const s=sd[p*R+r];if(s>=0&&s==sd[p*R+r+1]&&s==sd[p*R+r+2])z+=15}
+   for(let r=0;r<R-1;r++)if(sd[p*R+r]<0&&sd[p*R+r+1]<0)z+=30}
+  return z}
+ let cur=cost(),best=cur,bs=JSON.stringify([T,B]),temp=60;const t0=Date.now(),lim=2500+100*N;
+ function step(){
+  for(let i=0;i<1200;i++){
+   const r=Math.floor(Math.random()*R);let u;
+   if(Math.random()<.35){const a=Math.floor(Math.random()*nT),b=Math.floor(Math.random()*nT);if(a==b)continue;
+    const t=T[r];[t[a],t[b]]=[t[b],t[a]];u=()=>{[t[a],t[b]]=[t[b],t[a]]}}
+   else{const sl=[];T[r].forEach((tm,k)=>{if(!lset.has(kk(tm[0],tm[1])))sl.push([0,k,0],[0,k,1])});B[r].forEach((p,i)=>sl.push([1,i,0]));
+    if(sl.length<2)continue;
+    const A=sl[Math.floor(Math.random()*sl.length)],X=sl[Math.floor(Math.random()*sl.length)];
+    if(A===X||(A[0]==0&&X[0]==0&&A[1]==X[1])||(A[0]==1&&X[0]==1))continue;
+    const g=s=>s[0]?B[r][s[1]]:T[r][s[1]][s[2]],st=(s,v)=>{if(s[0])B[r][s[1]]=v;else T[r][s[1]][s[2]]=v};
+    const sw=()=>{const x=g(A);st(A,g(X));st(X,x)};sw();u=sw}
+   const n=cost();
+   if(n<=cur||Math.random()<Math.exp((cur-n)/temp)){cur=n;if(n<best){best=n;bs=JSON.stringify([T,B])}}else u();
+   temp=Math.max(1.5,temp*.99997)}
+  if(Date.now()-t0<lim)setTimeout(step,0);else{
+   const [BT]=JSON.parse(bs),m=[];
+   for(let r=0;r<R;r++)for(let c=0;c<U;c++)m.push([r+1,"T"+(c+1),BT[r][2*c].map(x=>x+1).sort((a,b)=>a-b),BT[r][2*c+1].map(x=>x+1).sort((a,b)=>a-b)]);
+   done({m})}}
+ step()}
+function cards(m){const c={};for(let p=1;p<=N;p++)c[p]=Array.from({length:R},()=>["—","Pause"]);m.forEach(([r,t,mu,ri])=>{mu.forEach(p=>c[p][r-1]=[t,"Mur"]);ri.forEach(p=>c[p][r-1]=[t,"Rideau"])});return c}
+function getSched(){
+ if(N===12&&C===3&&!links.length)return {m:D[R]};
+ return cache[key()]}
+function render(){
+ [...$("tabs").children].forEach(b=>b.classList.toggle("on",+b.dataset.r===R));
+ $("vc").classList.toggle("on",view==="c");$("vg").classList.toggle("on",view==="g");
+ const u=U(),nb=N-4*u;
+ $("sub").textContent=N+" joueurs · "+u+" terrain"+(u>1?"s":"")+" · chacun joue la moitié de ses manches côté Mur";
+ $("cap").textContent=u<C?"Seulement "+u+" terrain(s) utilisable(s) avec "+N+" joueurs (4 joueurs par terrain).":(nb?nb+" joueur(s) en pause à chaque manche, répartis équitablement.":"");
+ const k=key(),s=getSched();
+ if(!s){$("stat").textContent="";$("out").innerHTML='<p class="hint">Calcul de l’horaire en cours (quelques secondes)…</p>';
+  if(!pend[k]){pend[k]=1;generate(R,N,C,links.map(x=>x.slice()),res=>{cache[k]=res;delete pend[k];render()})}
+  return}
+ if(s.err){$("stat").textContent="";$("out").innerHTML='<p class="hint">'+esc(s.err)+'</p>';return}
+ const m=s.m,c=cards(m),opp={},part={},mur={};
+ m.forEach(([r,t,mu,ri])=>{[mu,ri].forEach(x=>{const q=Math.min(...x)+"-"+Math.max(...x);part[q]=(part[q]||0)+1});mu.forEach(a=>{mur[a]=(mur[a]||0)+1;ri.forEach(b=>{const q=Math.min(a,b)+"-"+Math.max(a,b);opp[q]=(opp[q]||0)+1})})});
+ const lkset=new Set(links.map(l=>Math.min(...l)+"-"+Math.max(...l)));
+ const pr=Object.entries(part).filter(([q,v])=>v>1&&!lkset.has(q)).length;
+ const rep=Object.values(opp).filter(v=>v>1).length,mx=Math.max(0,...Object.values(opp));
+ const balanced=Object.keys(c).every(p=>{const g=c[p].filter(x=>x[1]!=="Pause").length;return Math.abs(2*(mur[p]||0)-g)<=1});
+ $("stat").textContent=R+" manches · "+(balanced?"Mur / Rideau équilibrés (±1) · ":"⚠ Mur / Rideau non équilibrés · ")+(links.length?links.length+" jumelage(s) : partenaires à chaque manche · ":"")+(pr?"⚠ "+pr+" partenaire(s) répété(s) (parfois inévitable ; essayez « Nouveau tirage ») · ":"aucun autre partenaire répété · ")+(rep?rep+" paires d’adversaires se croisent plus d’une fois (max "+mx+")":"aucun adversaire répété");
+ if(view==="c"){
+  $("out").innerHTML='<div class="grid">'+Object.keys(c).map(p=>'<div class="card"><div class="hd"><span>'+esc(nm(p))+'</span><small>Round Robin Pickleball</small></div><table><tr><th>MANCHE</th><th style="text-align:center">TERRAIN</th><th>CÔTÉ</th></tr>'+c[p].map((x,i)=>'<tr><td>'+(i+1)+'</td><td class="t">'+x[0]+'</td><td class="'+(x[1]==="Mur"?"m":x[1]==="Rideau"?"r":"")+'">'+x[1]+'</td></tr>').join("")+'</table></div>').join("")+'</div>';
+ }else{
+  let h="";const L=a=>a.map(p=>esc(nm(p))).join(" + ");
+  for(let r=1;r<=R;r++){const rm=m.filter(x=>x[0]===r).sort((a,b)=>a[1]<b[1]?-1:1),pl=new Set(rm.flatMap(x=>[...x[2],...x[3]])),by=[];
+   for(let p=1;p<=N;p++)if(!pl.has(p))by.push(p);
+   h+='<div class="rd"><h3>Manche '+r+'</h3><div class="m3">'+rm.map(([_,t,mu,ri])=>'<div class="mt"><b>'+t+'</b><div><span class="lab">Mur</span>'+L(mu)+'</div><div><span class="lab">Rideau</span>'+L(ri)+'</div></div>').join("")+(by.length?'<div class="mt"><b>Pause</b><div>'+L(by)+'</div></div>':"")+'</div></div>'}
+  $("out").innerHTML=h}
+}
+function namesUI(){
+ $("names").innerHTML=Array.from({length:N},(_,i)=>i+1).map(p=>'<div><label>Joueur '+p+'</label><input data-p="'+p+'" value="'+esc(names[p]||"")+'" placeholder="Joueur '+p+'" maxlength="24"></div>').join("")}
+function sels(){
+ const used=new Set(links.flat());
+ ["sa","sb"].forEach(id=>{const s=$(id),v=s.value;s.innerHTML=Array.from({length:N},(_,i)=>i+1).map(p=>'<option value="'+p+'"'+(used.has(p)?" disabled":"")+'>'+esc(nm(p))+'</option>').join("");if(v&&!used.has(+v)&&+v<=N)s.value=v});
+ if($("sb").value===$("sa").value||$("sb").selectedOptions[0]?.disabled){const o=[...$("sb").options].find(o=>!o.disabled&&o.value!==$("sa").value);if(o)$("sb").value=o.value}
+ $("chips").innerHTML=links.map((l,i)=>'<span class="chip">'+esc(nm(l[0]))+' ⇄ '+esc(nm(l[1]))+'<button data-i="'+i+'" aria-label="Retirer">×</button></span>').join("")}
+function setCfg(){
+ N=Math.max(4,Math.min(40,Math.round(+$("nn").value)||12));C=Math.max(1,Math.min(10,Math.round(+$("nc").value)||3));
+ $("nn").value=N;$("nc").value=C;
+ links=links.filter(l=>l[0]<=N&&l[1]<=N);save();namesUI();sels();render()}
+$("nn").value=N;$("nc").value=C;$("nn").onchange=setCfg;$("nc").onchange=setCfg;
+$("names").oninput=e=>{const p=+e.target.dataset.p;if(!p)return;names[p]=e.target.value;save();sels();render()};
+$("add").onclick=()=>{const a=+$("sa").value,b=+$("sb").value;
+ if(a===b){$("msg").textContent="Choisissez deux joueurs différents.";return}
+ if(links.flat().includes(a)||links.flat().includes(b)){$("msg").textContent="Un joueur ne peut être jumelé qu’une seule fois.";return}
+ $("msg").textContent="";links.push([a,b]);save();sels();render()};
+$("chips").onclick=e=>{const i=e.target.dataset.i;if(i===undefined)return;links.splice(+i,1);save();sels();render()};
+$("redo").onclick=()=>{if(N===12&&C===3&&!links.length){$("msg").textContent="Ajoutez un jumelage ou modifiez joueurs/terrains pour générer un horaire personnalisé.";return}$("msg").textContent="";delete cache[key()];render()};
+[4,6,8].forEach(n=>{const b=document.createElement("button");b.textContent=n+" manches";b.dataset.r=n;b.onclick=()=>{R=n;render()};$("tabs").appendChild(b)});
+$("vc").onclick=()=>{view="c";render()};$("vg").onclick=()=>{view="g";render()};$("pr").onclick=()=>window.print();
+namesUI();sels();render();
+</script></body></html>
