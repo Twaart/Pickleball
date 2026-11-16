@@ -1,6 +1,6 @@
 # Round Robin Pickleball – User Guide
 
-🌐 [Français](Readme.md) · **English** · [Español](Readme.es.md) · [Deutsch](Readme.de.md)
+🌐 [Français](README.md) · **English** · [Español](Readme.es.md) · [Deutsch](Readme.de.md)
 
 A web tool for organizing a friendly pickleball **round robin** (partners change every round). It produces a card for each player showing, for every round, the court and the side: **Mur** (wall side) or **Rideau** (curtain side).
 
