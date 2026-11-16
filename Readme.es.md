@@ -4,7 +4,7 @@
 
 Herramienta web para organizar un **round robin** amistoso de pickleball (los compañeros cambian en cada ronda). Genera una tarjeta para cada jugador que indica, en cada ronda, la cancha y el lado: **Mur** (lado de la pared) o **Rideau** (lado de la cortina).
 
-**Enlace de la herramienta:** https://claude.ai/artifact/9ij2y181uVvrZoX9d7uSkZ
+**Enlace de la herramienta:** https://github.com/Twaart/Pickleball/blob/2918a3beeff2d3c8ef754905c754ddcd4b3e9579/Round%20Robin%20Pickleball.html
 
 > **Nota:** la interfaz de la herramienta está en francés. Los nombres de botones y etiquetas se indican abajo en francés, con su significado en español entre paréntesis.
 
