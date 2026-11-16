@@ -4,7 +4,7 @@
 
 Outil web pour organiser un tournoi amical de pickleball en **round robin** (partenaires qui changent à chaque manche). Il produit les cartes de chaque joueur : à chaque manche, le terrain et le côté (**Mur** ou **Rideau**).
 
-**Lien de l'outil :** https://claude.ai/artifact/9ij2y181uVvrZoX9d7uSkZ
+**Lien de l'outil :** 
 
 ---
 
